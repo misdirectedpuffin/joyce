@@ -1,0 +1,63 @@
+Description: >
+  This is an example of a long running ECS service that serves a JSON API of products.
+
+Parameters:
+  Cluster:
+    Description: Please provide the ECS Cluster ID that this service should run on
+    Type: String
+    AllowedValues:
+      - staging
+      - production
+      - airflow
+    Default: staging
+
+  # Path:
+  #   Description: The path to register with the Application Load Balancer
+  #   Type: String
+  #   Default: mini.pumperkin.com
+
+Resources:
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub ${Cluster}-flask-minimal
+      RetentionInDays: 365
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !ImportValue ECSVPCId
+      Port: 80
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /healthcheck/
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn:
+        Fn::ImportValue:
+          !Sub "${Cluster}HttpsLoadBalancerListenerArn"
+      Priority: 3
+      Conditions:
+        - Field: host-header
+          Values:
+            - mini.bt-infrastructure.com
+        - Field: path-pattern
+          Values:
+            - /*
+      Actions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+
+
+Outputs:
+  FlaskMinimalLogsGroup:
+    Value: !Ref CloudWatchLogsGroup
+  FlaskMinimalTargetGroupArn:
+    Value: !Ref TargetGroup
