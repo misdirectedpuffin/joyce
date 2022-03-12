@@ -46,5 +46,5 @@ def main():
 
 
 if __name__ == "__main__":
-    run_debug()
+    # run_debug()
     main()

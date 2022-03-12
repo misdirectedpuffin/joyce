@@ -2,7 +2,7 @@
 from random import randint
 from flask import Blueprint, jsonify
 
-bp = Blueprint("backend", __name__, url_prefix="/backend")
+bp = Blueprint("api", __name__, url_prefix="/api")
 
 @bp.route("/random", methods=["GET"])
 def random():

@@ -1,5 +1,6 @@
 """Bootstrap the application"""
-from blueprints import healthcheck, backend, loader
+import os
+from blueprints import api, healthcheck, loader
 from constants import DATABASE_CONFIG
 from extensions import db, migrate
 
@@ -16,7 +17,7 @@ def configure_db(app, database_name):
     connection = make_connection_uri(**DATABASE_CONFIG[database_name])
     app.config["SQLALCHEMY_DATABASE_URI"] = connection
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["DEBUG"] = True
+    app.config["DEBUG"] = int(os.getenv("DEBUG", 0))
     return app
 
 
@@ -38,5 +39,5 @@ def register_extensions(app):
 def register_blueprints(app):
     """Register blueprints with the app."""
     app.register_blueprint(healthcheck.bp)
-    app.register_blueprint(backend.bp)
+    app.register_blueprint(api.bp)
     app.register_blueprint(loader.bp)
