@@ -1,14 +1,21 @@
 version: '3.7'
 
 services:
-  # redis:
-  #   container_name: redis
-  #   image: 'redis:5.0-alpine'
-  #   command: redis-server
-  #   volumes:
-  #     - 'redis:/data'
-  #   ports:
-  #     - '6379:6379'
+  metabase:
+    image: metabase/metabase
+    container_name: metabase
+    ports:
+      - "3001:3000"
+    volumes:
+      - "./metabase-data:/metabase-data"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: postgres
+      MB_DB_PORT: 5432
+      MB_DB_USER: postgres
+      MB_DB_PASS: postgres
+      MB_DB_HOST: pgdb
+      MB_DB_FILE: /metabase-data/metabase.db
   db:
     image: postgres:14
     container_name: pgdb
@@ -32,6 +39,3 @@ services:
     env_file:
       - .env
     command: ["python", "app.py"]
-
-# volumes:
-#   redis:
