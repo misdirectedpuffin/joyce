@@ -5,7 +5,6 @@ from flask import Flask
 
 from bootstrap import create_app
 from models.model import db
-from loader import write, load_rows
 
 instance = Flask(__name__)
 
@@ -26,12 +25,11 @@ def create_database():
         db.session.commit()
 
 
-def run_debug(port: int = 3000):
+def main(port: int = 3000):
     """Run in the debug configuration enabling vscode to attach."""
     if os.getenv("DEBUGGER"):
         import multiprocessing
         if multiprocessing.current_process().pid > 1:
-
             import debugpy
 
             debugpy.listen(("0.0.0.0", port))
@@ -39,12 +37,10 @@ def run_debug(port: int = 3000):
             debugpy.wait_for_client()
             print("🎉 VS Code debugger attached, enjoy debugging 🎉", flush=True)
         print("pid is not 1")
+    else:
+        app.run(host="0.0.0.0", port=5000, threaded=True)
 
-
-def main():
-    app.run(host="0.0.0.0", port=5000, threaded=True)
 
 
 if __name__ == "__main__":
-    # run_debug()
     main()

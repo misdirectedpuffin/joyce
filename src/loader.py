@@ -1,12 +1,19 @@
-from calendar import c
 import csv
-from collections import namedtuple
 from itertools import groupby
-from multiprocessing.sharedctypes import Value
-from operator import itemgetter
-from typing import Optional
-from models.model import LevelsCourses, Student, Course, Class, Grade, Level, CoursesClasses, StudentsCourses, StudentsClasses
+
 from extensions import db
+from models.model import (
+    Class,
+    Course,
+    CoursesClasses,
+    Grade,
+    Level,
+    LevelsCourses,
+    Student,
+    StudentsClasses,
+    StudentsCourses,
+)
+
 
 class Name:
     def __init__(self, instr: str) -> None:
@@ -276,9 +283,6 @@ def create_students_courses(rows):
             db.session.add(students_courses)
         else:
             print("Student course found. Oh Noes!!!")
-            # student.courses.append(sc)
-            # db.session.add(student)
-            # db.session.add(course)
         print(f"Student Id: {student.id}, Course Id: {course.id} {fullname}")
     db.session.commit()
     print("Commit students_courses")
@@ -371,7 +375,6 @@ def write(rows):
     create_students_courses(rows)
     create_students_classes(rows)
     create_courses_classes(rows)
-    # return create_relationships(rows)
 
 def merge_object(obj):
     try:
